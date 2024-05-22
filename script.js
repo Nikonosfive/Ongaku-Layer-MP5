@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const newPlaylistButton = document.getElementById('newPlaylistButton');
     const tabs = document.getElementById('tabs');
 
-    let playlists = [];
+    let playlists = [{ name: '初期プレイリスト', files: [] }];
     let currentPlaylistIndex = 0;
     let currentTrackIndex = 0;
     let isPlaying = false;
@@ -30,21 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
             const items = playlistElement.getElementsByTagName('li');
             Array.from(items).forEach((item) => {
                 const fileName = item.getAttribute('data-file-name');
-                const file = playlists[currentPlaylistIndex].find(file => file.name === fileName);
+                const file = playlists[currentPlaylistIndex].files.find(file => file.name === fileName);
                 newPlaylist.push(file);
             });
-            playlists[currentPlaylistIndex] = newPlaylist;
+            playlists[currentPlaylistIndex].files = newPlaylist;
         }
     });
 
     newPlaylistButton.addEventListener('click', function () {
         const playlistName = prompt("Enter playlist name:");
         if (playlistName) {
-            playlists.push([]);
+            playlists.push({ name: playlistName, files: [] });
             const newIndex = playlists.length - 1;
-            const tab = document.createElement('button');
-            tab.textContent = playlistName;
-            tab.addEventListener('click', () => switchPlaylist(newIndex));
+            const tab = createTab(playlistName, newIndex);
             tabs.appendChild(tab);
             switchPlaylist(newIndex);
         }
@@ -53,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fileInput.addEventListener('change', function () {
         const files = Array.from(fileInput.files);
         if (files.length > 0) {
-            playlists[currentPlaylistIndex] = playlists[currentPlaylistIndex].concat(files);
+            playlists[currentPlaylistIndex].files = playlists[currentPlaylistIndex].files.concat(files);
             loadPlaylist();
         }
     });
@@ -75,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     nextButton.addEventListener('click', function () {
-        if (currentTrackIndex < playlists[currentPlaylistIndex].length - 1) {
+        if (currentTrackIndex < playlists[currentPlaylistIndex].files.length - 1) {
             currentTrackIndex++;
             loadTrack(currentTrackIndex);
             audio.play();
@@ -125,10 +123,10 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isRepeat) {
             audio.play();
         } else if (isShuffle) {
-            currentTrackIndex = Math.floor(Math.random() * playlists[currentPlaylistIndex].length);
+            currentTrackIndex = Math.floor(Math.random() * playlists[currentPlaylistIndex].files.length);
             loadTrack(currentTrackIndex);
             audio.play();
-        } else if (currentTrackIndex < playlists[currentPlaylistIndex].length - 1) {
+        } else if (currentTrackIndex < playlists[currentPlaylistIndex].files.length - 1) {
             currentTrackIndex++;
             loadTrack(currentTrackIndex);
             audio.play();
@@ -136,7 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function loadTrack(index) {
-        const file = playlists[currentPlaylistIndex][index];
+        const file = playlists[currentPlaylistIndex].files[index];
         const url = URL.createObjectURL(file);
         audio.src = url;
         audio.load();
@@ -146,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function loadPlaylist() {
         playlistElement.innerHTML = '';
-        playlists[currentPlaylistIndex].forEach((file, index) => {
+        playlists[currentPlaylistIndex].files.forEach((file, index) => {
             const li = document.createElement('li');
             li.textContent = file.name;
             li.setAttribute('data-file-name', file.name);
@@ -160,16 +158,16 @@ document.addEventListener('DOMContentLoaded', function () {
             deleteButton.textContent = 'Delete';
             deleteButton.addEventListener('click', (event) => {
                 event.stopPropagation();
-                playlists[currentPlaylistIndex].splice(index, 1);
+                playlists[currentPlaylistIndex].files.splice(index, 1);
                 if (index === currentTrackIndex) {
                     if (isPlaying) {
-                        if (currentTrackIndex === playlists[currentPlaylistIndex].length) {
+                        if (currentTrackIndex === playlists[currentPlaylistIndex].files.length) {
                             currentTrackIndex--;
                         }
                         loadTrack(currentTrackIndex);
                         audio.play();
                     } else {
-                        if (currentTrackIndex === playlists[currentPlaylistIndex].length) {
+                        if (currentTrackIndex === playlists[currentPlaylistIndex].files.length) {
                             currentTrackIndex = 0;
                             audio.src = '';
                             updateNowPlaying();
@@ -198,10 +196,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateNowPlaying() {
-        if (playlists[currentPlaylistIndex][currentTrackIndex]) {
-            nowPlaying.textContent = `Now Playing: ${playlists[currentPlaylistIndex][currentTrackIndex].name}`;
+        if (playlists[currentPlaylistIndex].files[currentTrackIndex]) {
+            nowPlaying.textContent = ` ${playlists[currentPlaylistIndex].files[currentTrackIndex].name}`;
         } else {
-            nowPlaying.textContent = 'Now Playing: None';
+            nowPlaying.textContent = 'なし';
         }
     }
 
@@ -217,11 +215,42 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.classList.remove('active');
             }
         });
-        if (playlists[currentPlaylistIndex].length > 0) {
+        if (playlists[currentPlaylistIndex].files.length > 0) {
             loadTrack(currentTrackIndex);
         } else {
             audio.src = '';
-            nowPlaying.textContent = 'Now Playing: None';
+            nowPlaying.textContent = 'なし';
         }
     }
+
+    function createTab(playlistName, index) {
+        const tab = document.createElement('button');
+        tab.classList.add('playlist-tab');
+        const span = document.createElement('span');
+        span.textContent = playlistName;
+        tab.appendChild(span);
+
+        const editButton = document.createElement('button');
+        editButton.textContent = '✏️';
+        editButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const newName = prompt('Enter new playlist name:', playlistName);
+            if (newName) {
+                playlists[index].name = newName;
+                span.textContent = newName;
+            }
+        });
+        tab.appendChild(editButton);
+
+        tab.addEventListener('click', () => switchPlaylist(index));
+        return tab;
+    }
+
+    // 初期プレイリストのタブを作成し、アクティブにする
+    const initialTab = createTab(playlists[0].name, 0);
+    initialTab.classList.add('active');
+    tabs.appendChild(initialTab);
+
+    // 初期プレイリストを読み込み
+    switchPlaylist(0);
 });
