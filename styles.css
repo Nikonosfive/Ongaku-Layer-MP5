@@ -1,6 +1,6 @@
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #d4d0c8;
+    background-color: #cccccc;
     color: black;
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@ body {
 }
 
 #player {
-    background-color: #c0c0c0;
+    background-color: #ffffffaa;
     width: 100vw;
     height: 100%;
     display: flex;
@@ -24,8 +24,8 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background-color: #000080;
-    color: white;
+    background-color: #dddddd;
+    color: Black;
     padding: 10px;
     display: flex;
     justify-content: space-between;
@@ -36,9 +36,9 @@ body {
 #nowPlaying {
     font-size: 18px;
     position: fixed;
-    bottom: 10px;
+    top: 85px;
     right: 10px;
-    background-color: navy;
+    color: black;
     padding: 10px;
     border-radius: 20px;
 }
@@ -50,9 +50,10 @@ body {
 }
 
 .control-btn {
-    background-color: #000080;
-    border: 1px solid #000;
-    color: white;
+    background-color: #eeeeee;
+    border: 1px solid #eeeeee;
+    border-radius: 3px;
+    color: black;
     cursor: pointer;
     font-size: 14px;
     padding: 5px 10px;
@@ -61,7 +62,7 @@ body {
 }
 
 .control-btn:hover {
-    background-color: #0000ff;
+    background-color: #eeeeee00;
 }
 
 #main {
@@ -108,7 +109,8 @@ body {
 
 #newPlaylistButton {
     background-color: #007bff;
-    border: 1px solid #000;
+    border: 1px solid #007bff;
+    border-radius: 3px;
     color: white;
     cursor: pointer;
     font-size: 14px;
@@ -134,7 +136,8 @@ body {
 
 #tabs button {
     background-color: #007bff;
-    border: 1px solid #000;
+    border: 1px solid #007bff;
+    border-radius: 3px;
     color: white;
     cursor: pointer;
     font-size: 14px;
@@ -170,17 +173,17 @@ body {
 }
 
 #playlist li:hover {
-    background-color: #d0d0d0;
+    background-color: #cccccc;
 }
 
 #playlist .active {
-    background-color: #c0c0c0;
+    background-color: #cccccc;
 }
 
 #playlist button {
-    background-color: #ff0000;
-    border: 1px solid #000;
-    border-radius: 5px;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    border-radius: 3px;
     color: white;
     cursor: pointer;
     padding: 5px 10px;
