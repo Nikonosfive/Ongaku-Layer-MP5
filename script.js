@@ -1,192 +1,227 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #d4d0c8;
-    color: black;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+document.addEventListener('DOMContentLoaded', function () {
+    const fileInput = document.getElementById('fileInput');
+    const audio = document.getElementById('audio');
+    const playPauseButton = document.getElementById('playPauseButton');
+    const prevButton = document.getElementById('prevButton');
+    const nextButton = document.getElementById('nextButton');
+    const shuffleButton = document.getElementById('shuffleButton');
+    const repeatButton = document.getElementById('repeatButton');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const speedSlider = document.getElementById('speedSlider');
+    const volumeLabel = document.getElementById('volumeLabel');
+    const speedLabel = document.getElementById('speedLabel');
+    const playlistElement = document.getElementById('playlist');
+    const nowPlaying = document.getElementById('nowPlaying');
+    const rewindButton = document.getElementById('rewindButton');
+    const forwardButton = document.getElementById('forwardButton');
+    const newPlaylistButton = document.getElementById('newPlaylistButton');
+    const tabs = document.getElementById('tabs');
 
-#player {
-    background-color: #c0c0c0;
-    width: 100vw;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding-top: 300px; /* ヘッダーの高さ分下にずらす */
-}
+    let playlists = [];
+    let currentPlaylistIndex = 0;
+    let currentTrackIndex = 0;
+    let isPlaying = false;
+    let isShuffle = false;
+    let isRepeat = false;
 
-#header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background-color: #000080;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    z-index: 100;
-}
+    $(playlistElement).sortable({
+        update: function (event, ui) {
+            const newPlaylist = [];
+            const items = playlistElement.getElementsByTagName('li');
+            Array.from(items).forEach((item) => {
+                const fileName = item.getAttribute('data-file-name');
+                const file = playlists[currentPlaylistIndex].find(file => file.name === fileName);
+                newPlaylist.push(file);
+            });
+            playlists[currentPlaylistIndex] = newPlaylist;
+        }
+    });
 
-#nowPlaying {
-    font-size: 18px;
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background-color: navy;
-    padding: 10px;
-    border-radius: 20px;
-}
+    newPlaylistButton.addEventListener('click', function () {
+        const playlistName = prompt("Enter playlist name:");
+        if (playlistName) {
+            playlists.push([]);
+            const newIndex = playlists.length - 1;
+            const tab = document.createElement('button');
+            tab.textContent = playlistName;
+            tab.addEventListener('click', () => switchPlaylist(newIndex));
+            tabs.appendChild(tab);
+            switchPlaylist(newIndex);
+        }
+    });
 
+    fileInput.addEventListener('change', function () {
+        const files = Array.from(fileInput.files);
+        if (files.length > 0) {
+            playlists[currentPlaylistIndex] = playlists[currentPlaylistIndex].concat(files);
+            loadPlaylist();
+        }
+    });
 
-#controls {
-    display: flex;
-    justify-content: space-around;
-}
+    playPauseButton.addEventListener('click', function () {
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+    });
 
-.control-btn {
-    background-color: #000080;
-    border: 1px solid #000;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 5px 10px;
-    margin: 0 5px;
-    transition: background-color 0.3s;
-}
+    prevButton.addEventListener('click', function () {
+        if (currentTrackIndex > 0) {
+            currentTrackIndex--;
+            loadTrack(currentTrackIndex);
+            audio.play();
+        }
+    });
 
-.control-btn:hover {
-    background-color: #0000ff;
-}
+    nextButton.addEventListener('click', function () {
+        if (currentTrackIndex < playlists[currentPlaylistIndex].length - 1) {
+            currentTrackIndex++;
+            loadTrack(currentTrackIndex);
+            audio.play();
+        }
+    });
 
-#main {
-    padding: 10px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
+    rewindButton.addEventListener('click', function () {
+        audio.currentTime = Math.max(0, audio.currentTime - 5);
+    });
 
-#volumeSpeedControls {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-}
+    forwardButton.addEventListener('click', function () {
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+    });
 
-.sliderContainer {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-    width: 100%;
-}
+    shuffleButton.addEventListener('click', function () {
+        isShuffle = !isShuffle;
+        shuffleButton.textContent = isShuffle ? '🔀 On' : '🔀';
+    });
 
-.sliderContainer label {
-    margin-right: 10px;
-    min-width: 60px;
-    text-align: left;
-    flex: 1;
-}
+    repeatButton.addEventListener('click', function () {
+        isRepeat = !isRepeat;
+        repeatButton.textContent = isRepeat ? '🔁 On' : '🔁';
+    });
 
-.sliderContainer input {
-    flex: 2;
-}
+    volumeSlider.addEventListener('input', function () {
+        audio.volume = volumeSlider.value;
+        volumeLabel.textContent = `${Math.round(volumeSlider.value * 100)}%`;
+    });
 
-#fileInput {
-    width: 100%;
-    margin-bottom: 10px;
-}
+    speedSlider.addEventListener('input', function () {
+        audio.playbackRate = speedSlider.value;
+        speedLabel.textContent = `${Math.round(speedSlider.value * 100)}%`;
+    });
 
-#audio {
-    width: 100%;
-    margin-bottom: 10px;
-}
+    audio.addEventListener('play', function () {
+        isPlaying = true;
+        playPauseButton.textContent = '⏸️';
+        updateNowPlaying();
+    });
 
-#newPlaylistButton {
-    background-color: #007bff;
-    border: 1px solid #000;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 5px 10px;
-    margin: 10px 0;
-    transition: background-color 0.3s;
-}
+    audio.addEventListener('pause', function () {
+        isPlaying = false;
+        playPauseButton.textContent = '▶️';
+    });
 
-#newPlaylistButton:hover {
-    background-color: #0056b3;
-}
+    audio.addEventListener('ended', function () {
+        if (isRepeat) {
+            audio.play();
+        } else if (isShuffle) {
+            currentTrackIndex = Math.floor(Math.random() * playlists[currentPlaylistIndex].length);
+            loadTrack(currentTrackIndex);
+            audio.play();
+        } else if (currentTrackIndex < playlists[currentPlaylistIndex].length - 1) {
+            currentTrackIndex++;
+            loadTrack(currentTrackIndex);
+            audio.play();
+        }
+    });
 
-#tabs {
-    margin: 10px 0;
-    display: flex;
-    flex-wrap: wrap;
-    overflow-x: auto;
-}
+    function loadTrack(index) {
+        const file = playlists[currentPlaylistIndex][index];
+        const url = URL.createObjectURL(file);
+        audio.src = url;
+        audio.load();
+        updatePlaylistUI();
+        updateNowPlaying();
+    }
 
-.tab-class{
-    height: 30px;
-}
+    function loadPlaylist() {
+        playlistElement.innerHTML = '';
+        playlists[currentPlaylistIndex].forEach((file, index) => {
+            const li = document.createElement('li');
+            li.textContent = file.name;
+            li.setAttribute('data-file-name', file.name);
+            li.addEventListener('click', () => {
+                currentTrackIndex = index;
+                loadTrack(currentTrackIndex);
+                audio.play();
+            });
 
-#tabs button {
-    background-color: #007bff;
-    border: 1px solid #000;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    padding: 5px 10px;
-    margin: 0 5px;
-    transition: background-color 0.3s;
-}
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', (event) => {
+                event.stopPropagation();
+                playlists[currentPlaylistIndex].splice(index, 1);
+                if (index === currentTrackIndex) {
+                    if (isPlaying) {
+                        if (currentTrackIndex === playlists[currentPlaylistIndex].length) {
+                            currentTrackIndex--;
+                        }
+                        loadTrack(currentTrackIndex);
+                        audio.play();
+                    } else {
+                        if (currentTrackIndex === playlists[currentPlaylistIndex].length) {
+                            currentTrackIndex = 0;
+                            audio.src = '';
+                            updateNowPlaying();
+                        }
+                    }
+                } else if (index < currentTrackIndex) {
+                    currentTrackIndex--;
+                }
+                loadPlaylist();
+            });
 
-#tabs button.active {
-    background-color: #0056b3;
-}
+            li.appendChild(deleteButton);
+            playlistElement.appendChild(li);
+        });
+    }
 
-#tabs button:hover {
-    background-color: #0056b3;
-}
+    function updatePlaylistUI() {
+        const items = playlistElement.getElementsByTagName('li');
+        Array.from(items).forEach((item, index) => {
+            if (index === currentTrackIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
 
-#playlist {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    background-color: #e0e0e0;
-    flex-grow: 1;
-    overflow-y: auto;
-}
+    function updateNowPlaying() {
+        if (playlists[currentPlaylistIndex][currentTrackIndex]) {
+            nowPlaying.textContent = `Now Playing: ${playlists[currentPlaylistIndex][currentTrackIndex].name}`;
+        } else {
+            nowPlaying.textContent = 'Now Playing: None';
+        }
+    }
 
-#playlist li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-#playlist li:hover {
-    background-color: #d0d0d0;
-}
-
-#playlist .active {
-    background-color: #c0c0c0;
-}
-
-#playlist button {
-    background-color: #ff0000;
-    border: 1px solid #000;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    padding: 5px 10px;
-    transition: background-color 0.3s;
-}
-
-#playlist button:hover {
-    background-color: #cc0000;
-}
+    function switchPlaylist(index) {
+        currentPlaylistIndex = index;
+        currentTrackIndex = 0;
+        loadPlaylist();
+        const tabButtons = tabs.getElementsByTagName('button');
+        Array.from(tabButtons).forEach((button, i) => {
+            if (i === index) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        if (playlists[currentPlaylistIndex].length > 0) {
+            loadTrack(currentTrackIndex);
+        } else {
+            audio.src = '';
+            nowPlaying.textContent = 'Now Playing: None';
+        }
+    }
+});
