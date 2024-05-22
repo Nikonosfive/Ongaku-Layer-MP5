@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Music Player</title>
+    <title>Ongaku layer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="player">
         <div id="header">
-            <div id="nowPlaying">再生中｜None</div>
             <div id="volumeSpeedControls">
                 <div class="sliderContainer">
-                    <label for="volumeSlider">Vol <span id="volumeLabel">100%</span></label>
+                    <label for="volumeSlider">🔈 <span id="volumeLabel">100%</span></label>
                     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
                 </div>
                 <div class="sliderContainer">
-                    <label for="speedSlider">Speed <span id="speedLabel">100%</span></label>
+                    <label for="speedSlider">⏱ <span id="speedLabel">100%</span></label>
                     <input type="range" id="speedSlider" min="0.5" max="2" step="0.01" value="1">
                 </div>
             </div>
@@ -29,12 +28,13 @@
                 <button id="nextButton" class="control-btn">⏭</button>
                 <button id="shuffleButton" class="control-btn">🔀</button>
                 <button id="repeatButton" class="control-btn">🔁</button>
+                          <div id="nowPlaying">None</div>
+
             </div>
         </div>
 
         <div id="main">
             <input type="file" id="fileInput" accept="audio/*" multiple>
-           
             <button id="newPlaylistButton">New Playlist</button>
             <div class="tab-class" id="tabs"></div>
             <ul id="playlist"></ul>
