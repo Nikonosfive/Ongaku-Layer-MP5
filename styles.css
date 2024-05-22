@@ -21,6 +21,7 @@ body {
 
 #header {
     position: fixed;
+  flex-wrap: wrap;
     top: 0;
     left: 0;
     right: 0;
@@ -30,19 +31,22 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 100;
+    z-index: 99;
 }
 
 #nowPlaying {
     font-size: 18px;
-    position: fixed;
-    top: 85px;
-    right: 10px;
+    background-color: #ffffff55;
+    position: relative;
+    /*top: 73px;
+    right: 10px;*/
     color: black;
-    padding: 10px;
-    border-radius: 20px;
+    padding: 7px;
+    border-radius:3px;
+    margin: 1px;
+  　Z-index: 100;
+    width: 100%;
 }
-
 
 #controls {
     display: flex;
@@ -77,6 +81,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .sliderContainer {
@@ -98,16 +103,20 @@ body {
 }
 
 #fileInput {
-    width: 100%;
+    width: 70%;
     margin-bottom: 10px;
 }
 
 #audio {
-    width: 100%;
+    width: calc(100% - 240px);
     margin-bottom: 10px;
 }
 
 #newPlaylistButton {
+    position: fixed;
+    top: 180px;
+    right: 10px;
+    width: 20%;
     background-color: #007bff;
     border: 1px solid #007bff;
     border-radius: 3px;
@@ -130,8 +139,8 @@ body {
     overflow-x: auto;
 }
 
-.tab-class{
-    height: 30px;
+.tab-class {
+    height: 40px;
 }
 
 #tabs button {
@@ -155,6 +164,7 @@ body {
 }
 
 #playlist {
+  
     list-style-type: none;
     margin: 0;
     padding: 0;
