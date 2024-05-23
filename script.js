@@ -242,15 +242,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         tab.appendChild(editButton);
 
-        tab.addEventListener('click', () => switchPlaylist(index));
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '🗑️';
+        deleteButton.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const confirmDelete = confirm('Are you sure you want to delete this playlist?');
+            if (confirmDelete) {
+                playlists.splice(index, 1);
+                tabs.removeChild(tab);
+                if (index === currentPlaylistIndex) {
+                    if (playlists.length > 0) {
+                        switchPlaylist(0);
+                    } else {
+                        currentPlaylistIndex = 0;
+                        currentTrackIndex = 0;
+                        audio.src = '';
+                        playlistElement.innerHTML = '';
+                        nowPlaying.textContent = 'なし';
+                    }
+                } else if (index < currentPlaylistIndex) {
+                    currentPlaylistIndex--;
+                }
+            }
+        });
+        tab.appendChild(deleteButton);
+
+        tab.addEventListener('click', function () {
+            switchPlaylist(index);
+        });
+
         return tab;
     }
 
-    // 初期プレイリストのタブを作成し、アクティブにする
-    const initialTab = createTab(playlists[0].name, 0);
-    initialTab.classList.add('active');
-    tabs.appendChild(initialTab);
+    playlists.forEach((playlist, index) => {
+        const tab = createTab(playlist.name, index);
+        tabs.appendChild(tab);
+    });
 
-    // 初期プレイリストを読み込み
     switchPlaylist(0);
 });
