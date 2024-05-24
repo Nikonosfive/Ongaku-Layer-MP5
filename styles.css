@@ -54,7 +54,7 @@ body {
 #nowPlaying {
   white-space: nowrap;
     animation: animate-banner 10s linear infinite;
-    vertical-align: middle;
+  width: 30vw;
 
 }
 
