@@ -34,18 +34,37 @@ body {
     z-index: 99;
 }
 
-#nowPlaying {
-    font-size: 18px;
+.scroll{
+  font-size: 18px;
     background-color: #ffffff55;
     position: relative;
-    /*top: 73px;
-    right: 10px;*/
     color: black;
-    padding: 7px;
-    border-radius:3px;
+    border-radius: 3px;
     margin: 1px;
   　Z-index: 100;
-    width: 100%;
+    width: 30vw;
+   height: 34px;
+  overflow : hidden;
+    padding: 3px 0;
+      display: flex;
+      align-items: center;
+
+}
+
+#nowPlaying {
+  white-space: nowrap;
+    animation: animate-banner 10s linear infinite;
+    vertical-align: middle;
+
+}
+
+@keyframes animate-banner {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 #controls {
@@ -88,7 +107,15 @@ body {
     display: flex;
     align-items: center;
     margin: 5px 0;
-    width: 100%;
+    width: 30vw;
+}
+
+#volumeSlider{
+  width: 20vw;
+}
+
+#speedSlider{
+  width: 20vw;
 }
 
 .sliderContainer label {
@@ -108,15 +135,16 @@ body {
 }
 
 #audio {
-    width: calc(100% - 240px);
+    width: calc(70vw - 70px);
     margin-bottom: 10px;
 }
 
 #newPlaylistButton {
     position: fixed;
-    top: 180px;
+    bottom: 5px;
     right: 10px;
-    width: 20%;
+    width: 15vw;
+  min-width: 70px;
     background-color: #007bff;
     border: 1px solid #007bff;
     border-radius: 3px;
@@ -126,6 +154,7 @@ body {
     padding: 5px 10px;
     margin: 10px 0;
     transition: background-color 0.3s;
+    z-index: 101;
 }
 
 #newPlaylistButton:hover {
