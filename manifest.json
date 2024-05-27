@@ -1,0 +1,35 @@
+{
+  "short_name": "Ongaku Layer",
+  "name": "Ongaku Layer MP5 TADR",
+  "description": "A low cost Music Player.",
+  "version": "0.10",
+  "icons": [
+      {
+        "src": "img/logo_96.png",
+        "type": "image/png",
+        "sizes": "96x96"
+      },
+      {
+        "src": "img/logo_144.png",
+        "type": "image/png",
+        "sizes": "144x144"
+      },
+      {
+        "src": "img/logo_192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "img/logo_512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+  "start_url": "https://site.nikonosfive.github.io/MP5/",
+  "display": "standalone",
+  "lang": "ja-JP",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "related_applications": [ ],
+  "prefer_related_applications": false
+}
